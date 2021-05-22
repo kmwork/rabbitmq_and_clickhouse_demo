@@ -26,6 +26,7 @@ public class ChFromRabbitMQApp {
     private static final AtomicInteger errorCountSql = new AtomicInteger(0);
 
     private final ChDataSource chDataSource = new ChDataSource();
+    private int NumLoop = 1000;
 
     enum AppTypeError {
         OK,
@@ -87,8 +88,12 @@ public class ChFromRabbitMQApp {
 
 
             };
-            channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
-            });
+
+            for (int i = 0; i < NumLoop; i++) {
+                channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
+                });
+                Thread.sleep(1000);
+            }
         }
 
 
