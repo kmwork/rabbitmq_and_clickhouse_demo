@@ -9,11 +9,14 @@ import org.junit.platform.commons.util.StringUtils;
 @Slf4j
 public class AppUtils {
 
-    private static String APP_PROFILE = "app.profile";
+    private static final String APP_PROFILE = "app.profile";
+
+    private AppUtils() {
+    }
 
     @SneakyThrows
     public static Properties loadProperties(String fileName) {
-        String profile = System.getProperty("app.profile");
+        String profile = System.getProperty(APP_PROFILE);
         if (StringUtils.isBlank(profile)) {
             log.error("Не указано свойство java options '{}'. Возможные значение: kostya, demo", APP_PROFILE);
             System.exit(-10);

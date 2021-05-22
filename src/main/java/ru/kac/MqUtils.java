@@ -13,6 +13,9 @@ public class MqUtils {
 
     private static final Properties prop = AppUtils.loadProperties("rabbitmq.properties");
 
+    private MqUtils() {
+    }
+
     @SneakyThrows
     public static Connection createMqConnection() {
         String mqHost = prop.getProperty("mq.host");

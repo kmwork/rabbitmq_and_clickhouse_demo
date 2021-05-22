@@ -10,13 +10,12 @@ public class ChUtils {
 
     private static final Properties prop = AppUtils.loadProperties("ch.properties");
 
-    public static ClickHouseProperties loadClickHouseProperties() {
+    private ChUtils() {
+    }
 
-        String chUrl = prop.getProperty("ch.url");
+    public static ClickHouseProperties loadClickHouseProperties() {
         String chUserName = prop.getProperty("ch.username");
         String chPassword = prop.getProperty("ch.password");
-        String chSchema = prop.getProperty("ch.schema");
-        String chTable = prop.getProperty("ch.table");
         String chTimeZone = TimeZone.getDefault().toZoneId().getId();
         ClickHouseProperties chProperties = new ClickHouseProperties();
         chProperties.setUseServerTimeZone(false);

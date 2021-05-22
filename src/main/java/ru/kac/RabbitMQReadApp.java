@@ -4,6 +4,7 @@ package ru.kac;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,8 +18,7 @@ public class RabbitMQReadApp {
 
     @SneakyThrows
     public void run() {
-        try (Connection connection = MqUtils.createMqConnection()) {
-            Channel channel = connection.createChannel();
+        try (Connection connection = MqUtils.createMqConnection(); Channel channel = connection.createChannel()) {
 
             String queue = MqUtils.getQueue();
             Map<String, Object> arguments = MqUtils.getMqArguments();
@@ -28,7 +28,7 @@ public class RabbitMQReadApp {
             log.info(" [*] Waiting for messages. To exit press CTRL+C");
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
+                String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
                 log.info(" [x] Received '" + message + "'");
             };
             channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
@@ -41,7 +41,6 @@ public class RabbitMQReadApp {
     public static void main(String[] args) {
         RabbitMQReadApp demoApp = new RabbitMQReadApp();
         demoApp.run();
-        //Thread.sleep(1000000);
     }
 
 }

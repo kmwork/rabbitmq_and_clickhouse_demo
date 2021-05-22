@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
+import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ public class ChFromRabbitMQApp {
 
 
     static class ChHook extends Thread {
+        @Override
         public void run() {
             log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, totalCount);
             if (errorCountJson.get() > 0 || errorCountSql.get() > 0) {
@@ -60,8 +62,7 @@ public class ChFromRabbitMQApp {
 
     @SneakyThrows
     public void run() {
-        try (Connection connection = MqUtils.createMqConnection()) {
-            Channel channel = connection.createChannel();
+        try (Connection connection = MqUtils.createMqConnection(); Channel channel = connection.createChannel()) {
 
             String queue = MqUtils.getQueue();
             Map<String, Object> arguments = MqUtils.getMqArguments();
@@ -71,7 +72,7 @@ public class ChFromRabbitMQApp {
             log.info(" [*] Waiting for messages. To exit press CTRL+C");
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String strJson = new String(delivery.getBody(), "UTF-8");
+                String strJson = new String(delivery.getBody(), StandardCharsets.UTF_8);
                 log.info(" [x] Received '" + strJson + "'");
                 AppTypeError typeError = addMqToCh(strJson);
                 switch (typeError) {
