@@ -1,22 +1,18 @@
 package ru.kac;
 
 
-import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@NoArgsConstructor
 public class RabbitMQReadApp {
 
-    private final ClickHouseProperties clickHouseProperties;
-
-    public RabbitMQReadApp() {
-        clickHouseProperties = ChUtils.loadClickHouseProperties();
-    }
 
 
     @SneakyThrows
@@ -45,7 +41,7 @@ public class RabbitMQReadApp {
     public static void main(String[] args) {
         RabbitMQReadApp demoApp = new RabbitMQReadApp();
         demoApp.run();
-        Thread.sleep(1000000);
+        //Thread.sleep(1000000);
     }
 
 }
