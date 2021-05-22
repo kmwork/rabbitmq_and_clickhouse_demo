@@ -1,10 +1,7 @@
 package ru.kac;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
-import cc.blynk.clickhouse.ClickHouseDataSource;
-import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
@@ -12,13 +9,15 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 @Slf4j
 public class ChInsertFromFileApp {
 
-    public static void main(String[] args) throws IOException, IOException {
+    @SneakyThrows
+    public static void main(String[] args) {
 
         URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
         log.debug("[FILE] url = " + jsonUrl);
@@ -30,11 +29,9 @@ public class ChInsertFromFileApp {
         Properties prop = new Properties();
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
 
+        final ChDataSource chDataSource = new ChDataSource();
 
-        ClickHouseProperties chProperties = ChUtils.loadClickHouseProperties();
-
-        ClickHouseDataSource chDS = new ClickHouseDataSource(ChUtils.getUrl(), chProperties);
-        try (ClickHouseConnection chConn = chDS.getConnection()) {
+        try (ClickHouseConnection chConn = chDataSource.getConnection()) {
 
             String sql = ChUtils.insertBatch(result.size());
 

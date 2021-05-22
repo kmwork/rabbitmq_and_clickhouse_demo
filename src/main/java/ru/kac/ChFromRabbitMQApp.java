@@ -1,7 +1,6 @@
 package ru.kac;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
-import cc.blynk.clickhouse.ClickHouseDataSource;
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +24,8 @@ public class ChFromRabbitMQApp {
     private static int totalCount;
     private static int errorCountJson;
     private static int errorCountSql;
+
+    private final ChDataSource chDataSource = new ChDataSource();
 
     enum AppTypeError {
         OK,
@@ -106,8 +107,7 @@ public class ChFromRabbitMQApp {
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
 
 
-        ClickHouseDataSource chDS = new ClickHouseDataSource(ChUtils.getUrl(), clickHouseProperties);
-        try (ClickHouseConnection chConn = chDS.getConnection()) {
+        try (ClickHouseConnection chConn = chDataSource.getConnection()) {
 
             String sql = ChUtils.insertBatch(result.size());
             PreparedStatement statement = chConn.prepareStatement(sql);
