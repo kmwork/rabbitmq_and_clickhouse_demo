@@ -88,7 +88,11 @@ public class ChFromRabbitMQApp {
                         successCount.incrementAndGet();
                         break;
                 }
-                totalCount.incrementAndGet();
+                int currentCount = totalCount.incrementAndGet();
+                if (currentCount % 200 == 0) {
+                    log.info("[MQ] Прочитано {} сообщений", currentCount);
+
+                }
 
 
             };
@@ -96,7 +100,7 @@ public class ChFromRabbitMQApp {
             for (int i = 0; i < NUM_LOOP; i++) {
                 channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
                 });
-                log.info("[Sleep] on ms = " + SLEEP_MS);
+                log.trace("[Sleep] on ms = " + SLEEP_MS);
                 Thread.sleep(SLEEP_MS);
             }
         }
