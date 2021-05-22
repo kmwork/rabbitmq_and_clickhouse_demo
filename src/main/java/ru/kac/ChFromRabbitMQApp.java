@@ -1,7 +1,6 @@
 package ru.kac;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
-import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -12,18 +11,19 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@NoArgsConstructor
 public class ChFromRabbitMQApp {
 
-    private final ClickHouseProperties clickHouseProperties;
-
-    private static int successCount;
-    private static int totalCount;
-    private static int errorCountJson;
-    private static int errorCountSql;
+    private static final AtomicInteger successCount = new AtomicInteger(0);
+    private static final AtomicInteger totalCount = new AtomicInteger(0);
+    private static final AtomicInteger errorCountJson = new AtomicInteger(0);
+    private static final AtomicInteger errorCountSql = new AtomicInteger(0);
 
     private final ChDataSource chDataSource = new ChDataSource();
 
@@ -37,14 +37,11 @@ public class ChFromRabbitMQApp {
         Runtime.getRuntime().addShutdownHook(new ChHook());
     }
 
-    public ChFromRabbitMQApp() {
-        clickHouseProperties = ChUtils.loadClickHouseProperties();
-    }
 
     static class ChHook extends Thread {
         public void run() {
             log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, totalCount);
-            if (errorCountJson > 0 || errorCountSql > 0) {
+            if (errorCountJson.get() > 0 || errorCountSql.get() > 0) {
                 log.error("[App:Errors] errorCountSql = {}, errorCountJson = {}" + errorCountSql, errorCountJson);
             } else log.info("[FINISH-APP] Нет ошибок");
         }
@@ -75,10 +72,18 @@ public class ChFromRabbitMQApp {
                 String strJson = new String(delivery.getBody(), "UTF-8");
                 log.info(" [x] Received '" + strJson + "'");
                 AppTypeError typeError = addMqToCh(strJson);
-                if (typeError == AppTypeError.OK) {
-                    successCount++;
+                switch (typeError) {
+                    case ERROR_SQL:
+                        errorCountSql.incrementAndGet();
+                        break;
+                    case INVALID_JSON:
+                        errorCountJson.incrementAndGet();
+                        break;
+                    case OK:
+                        successCount.incrementAndGet();
+                        break;
                 }
-                totalCount++;
+                totalCount.incrementAndGet();
 
 
             };

@@ -10,7 +10,7 @@ public class ChDataSource {
 
     private void loadDS() {
         ClickHouseProperties chProperties = ChUtils.loadClickHouseProperties();
-        ClickHouseDataSource chDS = new ClickHouseDataSource(ChUtils.getUrl(), chProperties);
+        chDS = new ClickHouseDataSource(ChUtils.getUrl(), chProperties);
     }
 
     public ChDataSource() {
