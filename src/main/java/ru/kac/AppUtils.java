@@ -31,7 +31,7 @@ public class AppUtils {
         sb.append("/");
         sb.append(profile).append("-").append(fileName);
         String url = sb.toString();
-        log.info("[File] Чтение ресурса : " + url);
+        log.info("[Read:File] Чтение ресурса : " + url);
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream(url));
         for (Map.Entry<Object, Object> p : prop.entrySet()) {
             log.debug("[Properties: {}] [Param: {}] = {}", fileName, p.getKey(), p.getValue());
@@ -42,7 +42,7 @@ public class AppUtils {
     @SneakyThrows
     public static String readJson(String fileName) {
         URL jsonUrl = ClassLoader.getSystemClassLoader().getResource(fileName);
-        log.debug("[FILE] url = " + jsonUrl);
+        log.debug("[Read:FILE] url = " + jsonUrl);
         return IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
     }
 }
