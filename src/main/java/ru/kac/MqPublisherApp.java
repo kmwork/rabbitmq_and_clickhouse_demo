@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MqPublisherApp {
 
-    static final int MESSAGE_COUNT = 7;
+    static final int MESSAGE_COUNT = 7000;
 
 
     public static void main(String[] args) throws Exception {
