@@ -4,7 +4,8 @@ import cc.blynk.clickhouse.ClickHouseConnection;
 import cc.blynk.clickhouse.ClickHouseDataSource;
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
@@ -12,13 +13,39 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 @Slf4j
-public class ChMainFromFile {
+public class ChFromRabbitMQApp {
 
-    public static void main(String[] args) throws IOException, IOException {
+    private final ClickHouseProperties clickHouseProperties;
+
+    private Connection createRabbitConnection() throws Exception {
+        ConnectionFactory cf = new ConnectionFactory();
+        cf.setHost("localhost");
+        cf.setVirtualHost("vhost_ch");
+        cf.setUsername("for_ch_root");
+        cf.setPassword("1");
+        return cf.newConnection();
+    }
+
+    public ChFromRabbitMQApp() {
+        clickHouseProperties = ChUtils.loadClickHouseProperties();
+    }
+
+
+    @SneakyThrows
+    public static void main(String[] args) {
+        ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
+        demoApp.run();
+    }
+
+    @SneakyThrows
+    public void run() {
+        ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
+        demoApp.run();
 
         URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
         log.debug("[FILE] url = " + jsonUrl);
@@ -31,13 +58,10 @@ public class ChMainFromFile {
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
 
 
-        ClickHouseProperties chProperties = ChUtils.loadClickHouseProperties();
-
-        ClickHouseDataSource chDS = new ClickHouseDataSource(ChUtils.getUrl(), chProperties);
+        ClickHouseDataSource chDS = new ClickHouseDataSource(ChUtils.getUrl(), clickHouseProperties);
         try (ClickHouseConnection chConn = chDS.getConnection()) {
 
             String sql = ChUtils.insertBatch(result.size());
-
             PreparedStatement statement = chConn.prepareStatement(sql);
 
             int sqlParamIndex = 0;
