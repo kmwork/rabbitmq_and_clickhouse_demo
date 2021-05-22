@@ -13,4 +13,5 @@ select *
 from itx2_events_demo_kostya.itx2_events_demo
 order by id desc, key asc
 limit 500;
+
 select timezone(), version();
