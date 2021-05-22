@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import ru.yandex.clickhouse.ClickHouseConnection;
@@ -36,12 +37,17 @@ public class Main {
         String chUserName = prop.getProperty("ch.username");
         String chPassword = prop.getProperty("ch.password");
         String chTable = prop.getProperty("ch.table");
-        ClickHouseProperties properties = new ClickHouseProperties();
-        properties.setClientName("Agent-Kostya");
-        properties.setUser(chUserName);
-        properties.setPassword(chPassword);
+        String chTimeZone = TimeZone.getDefault().toZoneId().getId();
+        ClickHouseProperties chProperties = new ClickHouseProperties();
+        chProperties.setUseServerTimeZone(false);
+        chProperties.setUseTimeZone(chTimeZone);
+        chProperties.setClientName("Agent-Kostya");
+        chProperties.setUser(chUserName);
+        chProperties.setPassword(chPassword);
+        chProperties.setClientName("Agent #1");
+        chProperties.setSessionId("default-session-id");
 
-        ClickHouseDataSource chDS = new ClickHouseDataSource(chUrl, properties);
+        ClickHouseDataSource chDS = new ClickHouseDataSource(chUrl, chProperties);
         try (ClickHouseConnection chConn = chDS.getConnection()) {
 
             StringBuilder sqlBuilder = new StringBuilder();
