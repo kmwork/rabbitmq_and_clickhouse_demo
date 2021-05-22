@@ -3,23 +3,12 @@ package ru.kac;
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import java.util.Properties;
 import java.util.TimeZone;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ChUtils {
 
-    private static final Properties prop = new Properties();
-
-    static {
-        loadProp();
-    }
-
-    @SneakyThrows
-    private static void loadProp() {
-        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
-        log.debug("[System:Ch-Properties] prop =" + prop);
-    }
+    private static final Properties prop = AppUtils.loadProperties("ch.properties");
 
     public static ClickHouseProperties loadClickHouseProperties() {
 

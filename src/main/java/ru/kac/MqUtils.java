@@ -11,17 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MqUtils {
 
-    private static final Properties prop = new Properties();
-
-    static {
-        loadProp();
-    }
-
-    @SneakyThrows
-    private static void loadProp() {
-        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("rabbitmq.properties"));
-        log.debug("[System:MQ-Properties] prop =" + prop);
-    }
+    private static final Properties prop = AppUtils.loadProperties("rabbitmq.properties");
 
     @SneakyThrows
     public static Connection createMqConnection() {

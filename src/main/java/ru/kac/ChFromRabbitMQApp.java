@@ -21,11 +21,31 @@ public class ChFromRabbitMQApp {
 
     private final ClickHouseProperties clickHouseProperties;
 
-    private int successCount;
-    private int errorCount;
+    private static int successCount;
+    private static int totalCount;
+    private static int errorCountJson;
+    private static int errorCountSql;
+
+    enum AppTypeError {
+        OK,
+        ERROR_SQL,
+        INVALID_JSON
+    }
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new ChHook());
+    }
 
     public ChFromRabbitMQApp() {
         clickHouseProperties = ChUtils.loadClickHouseProperties();
+    }
+
+    static class ChHook extends Thread {
+        public void run() {
+            log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, totalCount);
+            if (errorCountJson > 0 || errorCountSql > 0)
+                log.error("[App:Errors] errorCountSql = {}, errorCountJson = {}" + errorCountSql, errorCountJson);
+        }
     }
 
 
@@ -52,34 +72,34 @@ public class ChFromRabbitMQApp {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String strJson = new String(delivery.getBody(), "UTF-8");
                 log.info(" [x] Received '" + strJson + "'");
-                boolean isSuccess = addMqToCh(strJson);
-                if (isSuccess) {
+                AppTypeError typeError = addMqToCh(strJson);
+                if (typeError == AppTypeError.OK) {
                     successCount++;
-                } else {
-                    errorCount++;
                 }
+                totalCount++;
+
 
             };
             channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
             });
         }
 
-        log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, successCount + errorCount);
-        if (errorCount > 0)
-            log.error("[App:Errors] errorCount = " + errorCount);
+
     }
 
     @SneakyThrows
-    private boolean addMqToCh(String strJson) {
+    private AppTypeError addMqToCh(String strJson) {
         Map<String, Object> result = null;
+        if (strJson == null) {
+            return AppTypeError.INVALID_JSON;
+        }
         try {
             result =
                     new ObjectMapper().readValue(strJson, HashMap.class);
         } catch (JsonProcessingException e) {
             log.error("[Error:Json-Invalid] strJson = " + strJson);
-            return false;
+            return AppTypeError.INVALID_JSON;
         }
-
 
         Properties prop = new Properties();
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
@@ -106,8 +126,9 @@ public class ChFromRabbitMQApp {
             statement.execute();
         } catch (SQLException e) {
             log.error("[SQL:Error]", e);
+            return AppTypeError.ERROR_SQL;
         }
-        return true;
+        return AppTypeError.OK;
 
     }
 }
