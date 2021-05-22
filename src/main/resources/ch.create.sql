@@ -8,6 +8,15 @@ create table itx2_events_demo_kostya.itx2_events_demo
 ) engine = MergeTree ORDER BY (id, key) PRIMARY KEY (id, key)
       SETTINGS index_granularity = 8192;
 
+create table itx2_events_demo_kostya.itx2_events_with_array
+(
+    id          UInt64,
+    key         VARCHAR(255),
+    array_index UInt32,
+    value       VARCHAR(255)
+) engine = MergeTree ORDER BY (id, key, array_index) PRIMARY KEY (id, key)
+      SETTINGS index_granularity = 8192;
+
 
 select *
 from itx2_events_demo_kostya.itx2_events_demo

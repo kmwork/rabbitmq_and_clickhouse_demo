@@ -47,7 +47,7 @@ public class ChUtils {
         for (int i = 0; i < rowCount; i++) {
             if (i > 0)
                 sqlBuilder.append(", ");
-            sqlBuilder.append("(?,?,?)");
+            sqlBuilder.append("(?,?,?,?)");
         }
         String sql = sqlBuilder.toString();
         if (log.isTraceEnabled()) {

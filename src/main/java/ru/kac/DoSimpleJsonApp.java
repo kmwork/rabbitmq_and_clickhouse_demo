@@ -20,12 +20,17 @@ public class DoSimpleJsonApp {
     @SneakyThrows
     private void run() {
         String strJson = AppUtils.readJson("k_json.json");
-        Map<String, String> propsIterative = JsonUtils.jsonToMap(strJson);
+        Map<String, JsonUtils.IndexedValue> propsIterative = JsonUtils.jsonToMap(strJson);
 
         log.debug("[Original-Json] {}", strJson);
 
-        for (Map.Entry<String, String> en : propsIterative.entrySet()) {
-            log.debug("[Item: {}] = {}", en.getKey(), en.getValue());
+        for (Map.Entry<String, JsonUtils.IndexedValue> en : propsIterative.entrySet()) {
+            Integer index = en.getValue().getIndex();
+            if (index == null) {
+                log.debug("[Simple:Item: {}] = {}", en.getKey(), en.getValue().getValueAsText());
+            } else {
+                log.debug("[Multi: Item: {}, index = {}] = {}", en.getValue().getPrefix(), index, en.getValue());
+            }
         }
     }
 }

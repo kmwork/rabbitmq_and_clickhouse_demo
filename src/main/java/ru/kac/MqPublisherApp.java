@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MqPublisherApp {
 
-    static final int MESSAGE_COUNT = 7_000;
+    static final int MESSAGE_COUNT = 10;
 
 
     @SneakyThrows

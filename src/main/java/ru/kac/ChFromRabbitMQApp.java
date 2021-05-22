@@ -7,6 +7,7 @@ import com.rabbitmq.client.DeliverCallback;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NoArgsConstructor;
@@ -102,7 +103,7 @@ public class ChFromRabbitMQApp {
             return AppTypeError.INVALID_JSON;
         }
 
-        Map<String, String> result;
+        Map<String, JsonUtils.IndexedValue> result;
         try {
             result = JsonUtils.jsonToMap(strJson);
         } catch (Exception e) {
@@ -117,16 +118,19 @@ public class ChFromRabbitMQApp {
 
             int sqlParamIndex = 0;
             long id = System.nanoTime();
-            for (Map.Entry<String, String> elem : result.entrySet()) {
-                String key = elem.getKey();
-                String value = elem.getValue() == null ? null : elem.getValue();
+            for (Map.Entry<String, JsonUtils.IndexedValue> elem : result.entrySet()) {
+                JsonUtils.IndexedValue value = elem.getValue();
 
                 if (log.isTraceEnabled()) {
-                    log.trace("[SQL:INSERT] id = {}, key = {}, value = {}", id, key, value);
+                    log.trace("[SQL:INSERT] id = {}, key = {}, value = {}, index = {}", id, value.getPrefix(), value, value.getIndex());
                 }
                 statement.setLong(++sqlParamIndex, id);
-                statement.setString(++sqlParamIndex, key);
-                statement.setString(++sqlParamIndex, value);
+                statement.setString(++sqlParamIndex, value.getPrefix());
+                statement.setString(++sqlParamIndex, value.getValueAsText());
+                if (value.getIndex() == null) {
+                    statement.setNull(++sqlParamIndex, Types.INTEGER);
+                } else
+                    statement.setInt(++sqlParamIndex, value.getIndex());
 
             }
             statement.execute();
