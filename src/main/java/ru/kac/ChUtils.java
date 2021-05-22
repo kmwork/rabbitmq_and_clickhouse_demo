@@ -50,7 +50,9 @@ public class ChUtils {
             sqlBuilder.append("(?,?,?)");
         }
         String sql = sqlBuilder.toString();
-        log.debug("[SQL] sql = " + sql);
+        if (log.isTraceEnabled()) {
+            log.trace("[SQL] sql = " + sql);
+        }
         return sql;
     }
 

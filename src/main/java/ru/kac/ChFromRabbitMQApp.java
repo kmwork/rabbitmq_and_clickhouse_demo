@@ -73,7 +73,9 @@ public class ChFromRabbitMQApp {
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String strJson = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                log.info(" [x] Received '" + strJson + "'");
+                if (log.isTraceEnabled()) {
+                    log.trace(" [x] Received '" + strJson + "'");
+                }
                 AppTypeError typeError = addMqToCh(strJson);
                 switch (typeError) {
                     case ERROR_SQL:

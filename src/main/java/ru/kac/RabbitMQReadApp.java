@@ -29,7 +29,9 @@ public class RabbitMQReadApp {
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                log.info(" [x] Received '" + message + "'");
+                if (log.isTraceEnabled()) {
+                    log.trace(" [x] Received '" + message + "'");
+                }
             };
             channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
             });
