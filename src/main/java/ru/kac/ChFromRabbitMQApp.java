@@ -4,8 +4,6 @@ import cc.blynk.clickhouse.ClickHouseConnection;
 import cc.blynk.clickhouse.ClickHouseDataSource;
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
@@ -22,15 +20,6 @@ public class ChFromRabbitMQApp {
 
     private final ClickHouseProperties clickHouseProperties;
 
-    private Connection createRabbitConnection() throws Exception {
-        ConnectionFactory cf = new ConnectionFactory();
-        cf.setHost("localhost");
-        cf.setVirtualHost("vhost_ch");
-        cf.setUsername("for_ch_root");
-        cf.setPassword("1");
-        return cf.newConnection();
-    }
-
     public ChFromRabbitMQApp() {
         clickHouseProperties = ChUtils.loadClickHouseProperties();
     }
@@ -45,10 +34,8 @@ public class ChFromRabbitMQApp {
     @SneakyThrows
     public void run() {
         ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
-        demoApp.run();
 
         URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
-        log.debug("[FILE] url = " + jsonUrl);
         String strJson = IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
         Map<String, Object> result =
                 new ObjectMapper().readValue(strJson, HashMap.class);
