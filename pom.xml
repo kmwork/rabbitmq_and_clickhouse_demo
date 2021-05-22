@@ -19,10 +19,15 @@
     <dependencies>
 
         <dependency>
-            <groupId>ru.yandex.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.3.1</version>
+            <groupId>cc.blynk.clickhouse</groupId>
+            <artifactId>clickhouse4j</artifactId>
+            <version>1.4.4</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>ru.yandex.clickhouse</groupId>-->
+        <!--            <artifactId>clickhouse-jdbc</artifactId>-->
+        <!--            <version>0.3.1</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
