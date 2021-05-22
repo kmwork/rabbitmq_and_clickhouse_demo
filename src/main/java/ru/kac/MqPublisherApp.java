@@ -26,12 +26,10 @@ public class MqPublisherApp {
             ch.confirmSelect();
 
             int batchSize = 100;
-            int outstandingMessageCount = 0;
 
             long start = System.nanoTime();
             for (int i = 0; i < MESSAGE_COUNT; i++) {
-                //String body = String.valueOf(i);
-                long value = System.currentTimeMillis();
+                long value = System.nanoTime();
 
 
                 String body = String.format("{\n" +
@@ -39,17 +37,8 @@ public class MqPublisherApp {
                         "\"value\": %d \n" +
                         "}", value, value);
                 ch.basicPublish("", queue, null, body.getBytes());
-                outstandingMessageCount++;
-
-                if (outstandingMessageCount == batchSize) {
-                    ch.waitForConfirmsOrDie(5);
-                    outstandingMessageCount = 0;
-                }
             }
 
-            if (outstandingMessageCount > 0) {
-                ch.waitForConfirmsOrDie(5);
-            }
             long end = System.nanoTime();
             String msq = String.format("Published %,d messages in batch in %,d ms%n", MESSAGE_COUNT, Duration.ofNanos(end - start).toMillis());
             log.info(msq);
