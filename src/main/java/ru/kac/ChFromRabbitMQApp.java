@@ -43,8 +43,9 @@ public class ChFromRabbitMQApp {
     static class ChHook extends Thread {
         public void run() {
             log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, totalCount);
-            if (errorCountJson > 0 || errorCountSql > 0)
+            if (errorCountJson > 0 || errorCountSql > 0) {
                 log.error("[App:Errors] errorCountSql = {}, errorCountJson = {}" + errorCountSql, errorCountJson);
+            } else log.info("[FINISH-APP] Нет ошибок");
         }
     }
 
