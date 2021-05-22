@@ -21,9 +21,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException, IOException {
 
-        URL url = ClassLoader.getSystemClassLoader().getResource("k_json.json");
-        log.debug("[FILE] url = " + url);
-        String strJson = IOUtils.toString(url, StandardCharsets.UTF_8);
+        URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
+        log.debug("[FILE] url = " + jsonUrl);
+        String strJson = IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
         Map<String, Object> result =
                 new ObjectMapper().readValue(strJson, HashMap.class);
 
@@ -32,20 +32,20 @@ public class Main {
         prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
 
 
-        String url = prop.getProperty("ch.url");
-        String userName = prop.getProperty("ch.username");
-        String password = prop.getProperty("ch.password");
-        String table = prop.getProperty("ch.table");
+        String chUrl = prop.getProperty("ch.url");
+        String chUserName = prop.getProperty("ch.username");
+        String chPassword = prop.getProperty("ch.password");
+        String chTable = prop.getProperty("ch.table");
         ClickHouseProperties properties = new ClickHouseProperties();
         properties.setClientName("Agent-Kostya");
-        properties.setUser(userName);
-        properties.setPassword(password);
+        properties.setUser(chUserName);
+        properties.setPassword(chPassword);
 
-        ClickHouseDataSource chDS = new ClickHouseDataSource(url, properties);
-        try (ClickHouseConnection chConn = chDS.getConnection() {
+        ClickHouseDataSource chDS = new ClickHouseDataSource(chUrl, properties);
+        try (ClickHouseConnection chConn = chDS.getConnection()) {
 
             StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("INSERT INTO ").append(table);
+            sqlBuilder.append("INSERT INTO ").append(chTable);
             sqlBuilder.append(".batch_insert ").append("(id, key,value) VALUES ");
             for (int i = 0; i < result.size(); i++) {
                 if (i > 0)
