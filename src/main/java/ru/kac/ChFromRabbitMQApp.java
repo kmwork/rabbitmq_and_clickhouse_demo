@@ -3,9 +3,11 @@ package ru.kac;
 import cc.blynk.clickhouse.ClickHouseConnection;
 import cc.blynk.clickhouse.ClickHouseDataSource;
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DeliverCallback;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -13,12 +15,14 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 @Slf4j
 public class ChFromRabbitMQApp {
 
     private final ClickHouseProperties clickHouseProperties;
+
+    private int successCount;
+    private int errorCount;
 
     public ChFromRabbitMQApp() {
         clickHouseProperties = ChUtils.loadClickHouseProperties();
@@ -29,16 +33,52 @@ public class ChFromRabbitMQApp {
     public static void main(String[] args) {
         ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
         demoApp.run();
+
     }
+
 
     @SneakyThrows
     public void run() {
-        ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
+        try (Connection connection = MqUtils.createMqConnection()) {
+            Channel channel = connection.createChannel();
 
-        URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
-        String strJson = IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
-        Map<String, Object> result =
-                new ObjectMapper().readValue(strJson, HashMap.class);
+            String queue = MqUtils.getQueue();
+            Map<String, Object> arguments = MqUtils.getMqArguments();
+            channel.queueDeclare(queue, true, false, false, arguments);
+
+
+            log.info(" [*] Waiting for messages. To exit press CTRL+C");
+
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                String strJson = new String(delivery.getBody(), "UTF-8");
+                log.info(" [x] Received '" + strJson + "'");
+                boolean isSuccess = addMqToCh(strJson);
+                if (isSuccess) {
+                    successCount++;
+                } else {
+                    errorCount++;
+                }
+
+            };
+            channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
+            });
+        }
+
+        log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, successCount + errorCount);
+        if (errorCount > 0)
+            log.error("[App:Errors] errorCount = " + errorCount);
+    }
+
+    @SneakyThrows
+    private boolean addMqToCh(String strJson) {
+        Map<String, Object> result = null;
+        try {
+            result =
+                    new ObjectMapper().readValue(strJson, HashMap.class);
+        } catch (JsonProcessingException e) {
+            log.error("[Error:Json-Invalid] strJson = " + strJson);
+            return false;
+        }
 
 
         Properties prop = new Properties();
@@ -67,6 +107,7 @@ public class ChFromRabbitMQApp {
         } catch (SQLException e) {
             log.error("[SQL:Error]", e);
         }
+        return true;
 
     }
 }
