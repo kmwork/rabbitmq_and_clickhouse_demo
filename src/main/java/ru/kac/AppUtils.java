@@ -1,9 +1,12 @@
 package ru.kac;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.junit.platform.commons.util.StringUtils;
 
 @Slf4j
@@ -34,5 +37,12 @@ public class AppUtils {
             log.debug("[Properties: {}] [Param: {}] = {}", fileName, p.getKey(), p.getValue());
         }
         return prop;
+    }
+
+    @SneakyThrows
+    public static String readJson(String fileName) {
+        URL jsonUrl = ClassLoader.getSystemClassLoader().getResource(fileName);
+        log.debug("[FILE] url = " + jsonUrl);
+        return IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
     }
 }

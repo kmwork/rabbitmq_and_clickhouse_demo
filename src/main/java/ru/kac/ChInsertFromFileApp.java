@@ -2,8 +2,6 @@ package ru.kac;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -11,17 +9,14 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 @Slf4j
 public class ChInsertFromFileApp {
 
     @SneakyThrows
     public static void main(String[] args) {
+        String strJson = AppUtils.readJson("k_json.json");
 
-        URL jsonUrl = ClassLoader.getSystemClassLoader().getResource("k_json.json");
-        log.debug("[FILE] url = " + jsonUrl);
-        String strJson = IOUtils.toString(jsonUrl, StandardCharsets.UTF_8);
         Map<String, Object> result =
                 new ObjectMapper().readValue(strJson, HashMap.class);
 

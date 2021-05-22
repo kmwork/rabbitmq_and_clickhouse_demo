@@ -3,6 +3,7 @@ package ru.kac;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConfirmCallback;
 import com.rabbitmq.client.Connection;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentNavigableMap;
@@ -55,17 +56,12 @@ public class MqPublisherApp {
             });
 
 
+            String strJson = AppUtils.readJson("k_json.json");
             long start = System.nanoTime();
             for (int i = 0; i < MESSAGE_COUNT; i++) {
                 long value = System.nanoTime();
-
-
-                String body = String.format("{\n" +
-                        "\"key\": %d,\n" +
-                        "\"value\": %d \n" +
-                        "}", value, value);
-                outstandingConfirms.put(ch.getNextPublishSeqNo(), body);
-                ch.basicPublish("", queue, null, body.getBytes());
+                outstandingConfirms.put(ch.getNextPublishSeqNo(), strJson);
+                ch.basicPublish("", queue, null, strJson.getBytes(StandardCharsets.UTF_8));
             }
 
 
