@@ -17,8 +17,7 @@ public class ChInsertFromFileApp {
     public static void main(String[] args) {
         String strJson = AppUtils.readJson("k_json.json");
 
-        Map<String, Object> result =
-                new ObjectMapper().readValue(strJson, HashMap.class);
+        Map<String, Object> result = new ObjectMapper().readValue(strJson, HashMap.class);
 
 
         Properties prop = new Properties();

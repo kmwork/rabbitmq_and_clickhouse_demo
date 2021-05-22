@@ -56,7 +56,7 @@ public class MqPublisherApp {
             });
 
 
-            String strJson = AppUtils.readJson("k_json.json");
+            String strJson = AppUtils.readJson("k_ex_json.json");
             long start = System.nanoTime();
             for (int i = 0; i < MESSAGE_COUNT; i++) {
                 long value = System.nanoTime();
@@ -68,7 +68,6 @@ public class MqPublisherApp {
             if (!waitUntil(Duration.ofSeconds(60), () -> outstandingConfirms.isEmpty())) {
                 throw new IllegalStateException("All messages could not be confirmed in 60 seconds");
             }
-
 
             long end = System.nanoTime();
             String msq = String.format("Published %,d messages in batch in %,d ms%n", MESSAGE_COUNT, Duration.ofNanos(end - start).toMillis());

@@ -1,17 +1,13 @@
 package ru.kac;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -102,21 +98,17 @@ public class ChFromRabbitMQApp {
 
     @SneakyThrows
     private AppTypeError addMqToCh(String strJson) {
-        Map<String, Object> result = null;
         if (strJson == null) {
             return AppTypeError.INVALID_JSON;
         }
+
+        Map<String, String> result;
         try {
-            result =
-                    new ObjectMapper().readValue(strJson, HashMap.class);
-        } catch (JsonProcessingException e) {
+            result = JsonUtils.jsonToMap(strJson);
+        } catch (Exception e) {
             log.error("[Error:Json-Invalid] strJson = " + strJson);
             return AppTypeError.INVALID_JSON;
         }
-
-        Properties prop = new Properties();
-        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("kostya-profile/kostya-ch.properties"));
-
 
         try (ClickHouseConnection chConn = chDataSource.getConnection()) {
 
@@ -125,9 +117,9 @@ public class ChFromRabbitMQApp {
 
             int sqlParamIndex = 0;
             long id = System.nanoTime();
-            for (Map.Entry<String, Object> elem : result.entrySet()) {
+            for (Map.Entry<String, String> elem : result.entrySet()) {
                 String key = elem.getKey();
-                String value = elem.getValue() == null ? null : elem.getValue().toString();
+                String value = elem.getValue() == null ? null : elem.getValue();
 
                 if (log.isTraceEnabled()) {
                     log.trace("[SQL:INSERT] id = {}, key = {}, value = {}", id, key, value);

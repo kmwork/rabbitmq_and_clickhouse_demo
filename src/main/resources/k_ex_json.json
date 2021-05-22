@@ -1,0 +1,13 @@
+{
+  "attr1": 10,
+  "bunch1": {
+    "attr2": "text2",
+    "attr3": 5
+  },
+  "bunch2": {
+    "params1": {
+      "attr4": 1,
+      "attr5": 2
+    }
+  }
+}
