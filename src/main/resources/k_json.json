@@ -1,0 +1,30 @@
+{
+  "id": "00000000-1ab9-4454-b3f4-e46f310f22f9",
+  "lmSystemId": "153d628d-d991-40d9-bdda-338860803e5e",
+  "metadataType": "2",
+  "cameraId": "926d3150-8fcc-4b8d-8eb1-76f631f83ebb",
+  "cameraName": "СУПЕР КАМЕРА",
+  "start": 1615808392565,
+  "end": 1615808392670,
+  "indexTaskType": "2",
+  "vendor": "4",
+  "numberPlate": "Е665НК152",
+  "brand": "Hyndai",
+  "model": "Tucson",
+  "bestEvent.colors.brightness": [
+    1,
+    2,
+    3,
+    4,
+    6
+  ],
+  "bestEvent.colors.hue": [
+    5,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "bestEvent.colors.saturation": []
+}
