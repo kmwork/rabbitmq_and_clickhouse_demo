@@ -40,7 +40,6 @@ public class ChFromRabbitMQApp {
         Runtime.getRuntime().addShutdownHook(new ChHook());
     }
 
-
     static class ChHook extends Thread {
         @Override
         public void run() {
@@ -51,14 +50,12 @@ public class ChFromRabbitMQApp {
         }
     }
 
-
     @SneakyThrows
     public static void main(String[] args) {
         ChFromRabbitMQApp demoApp = new ChFromRabbitMQApp();
         demoApp.run();
 
     }
-
 
     @SneakyThrows
     public void run() {
@@ -91,10 +88,7 @@ public class ChFromRabbitMQApp {
                 int currentCount = totalCount.incrementAndGet();
                 if (currentCount % 200 == 0) {
                     log.info("[MQ] Прочитано {} сообщений", currentCount);
-
                 }
-
-
             };
 
             for (int i = 0; i < NUM_LOOP; i++) {
@@ -104,8 +98,6 @@ public class ChFromRabbitMQApp {
                 Thread.sleep(SLEEP_MS);
             }
         }
-
-
     }
 
     @SneakyThrows
