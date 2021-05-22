@@ -1,6 +1,5 @@
 package ru.kac;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,7 +20,6 @@ public class DoSimpleJsonApp {
     @SneakyThrows
     private void run() {
         String strJson = AppUtils.readJson("k_json.json");
-        ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> propsIterative = JsonUtils.jsonToMap(strJson);
 
         log.debug("[Original-Json] {}", strJson);
