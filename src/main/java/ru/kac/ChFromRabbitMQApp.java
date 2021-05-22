@@ -24,7 +24,7 @@ public class ChFromRabbitMQApp {
     private static final AtomicInteger totalCount = new AtomicInteger(0);
     private static final AtomicInteger errorCountJson = new AtomicInteger(0);
     private static final AtomicInteger errorCountSql = new AtomicInteger(0);
-    private static final long SLEEP_MS = 1000;
+    private static final long SLEEP_MS = 100;
 
     private final ChDataSource chDataSource = new ChDataSource();
     private static final int NUM_LOOP = 1000;
@@ -93,6 +93,7 @@ public class ChFromRabbitMQApp {
             for (int i = 0; i < NUM_LOOP; i++) {
                 channel.basicConsume(queue, true, deliverCallback, consumerTag -> {
                 });
+                log.info("[Sleep] on ms = " + SLEEP_MS);
                 Thread.sleep(SLEEP_MS);
             }
         }
