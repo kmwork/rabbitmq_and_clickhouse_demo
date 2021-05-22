@@ -56,7 +56,7 @@ public class MqPublisherApp {
             });
 
 
-            String strJson = AppUtils.readJson("k_ex_json.json");
+            String strJson = AppUtils.readJson("k_json.json");
             long start = System.nanoTime();
             for (int i = 0; i < MESSAGE_COUNT; i++) {
                 outstandingConfirms.put(ch.getNextPublishSeqNo(), strJson);

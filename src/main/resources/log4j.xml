@@ -8,7 +8,7 @@
     </appender>
 
     <category name="ru.kac">
-        <priority value="debug"></priority>
+        <priority value="trace"></priority>
     </category>
 
     <root>

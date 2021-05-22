@@ -12,9 +12,9 @@ create table itx2_events_demo_kostya.itx2_events_with_array
 (
     id          UInt64,
     key         VARCHAR(255),
-    array_index UInt32,
-    value       VARCHAR(255)
-) engine = MergeTree ORDER BY (id, key, array_index) PRIMARY KEY (id, key)
+    value       VARCHAR(255),
+    array_index Int32
+) engine = MergeTree ORDER BY (id, key, array_index) PRIMARY KEY (id, key, array_index)
       SETTINGS index_granularity = 8192;
 
 

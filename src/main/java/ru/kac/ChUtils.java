@@ -1,8 +1,13 @@
 package ru.kac;
 
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,7 +48,7 @@ public class ChUtils {
     public static String insertBatch(int rowCount) {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("INSERT INTO ").append(ChUtils.getSchema()).append(".").append(ChUtils.getTable()).append(" ");
-        sqlBuilder.append("(id,key,value) FORMAT Values ");
+        sqlBuilder.append("(id,key,value,array_index) FORMAT Values ");
         for (int i = 0; i < rowCount; i++) {
             if (i > 0)
                 sqlBuilder.append(", ");
@@ -54,6 +59,48 @@ public class ChUtils {
             log.trace("[SQL] sql = " + sql);
         }
         return sql;
+    }
+
+    @SneakyThrows
+    public static ChFromRabbitMQApp.AppTypeError addMqToCh(Connection chConn, String strJson) {
+        if (strJson == null) {
+            return ChFromRabbitMQApp.AppTypeError.INVALID_JSON;
+        }
+
+        Map<String, JsonUtils.IndexedValue> result;
+        try {
+            result = JsonUtils.jsonToMap(strJson);
+        } catch (Exception e) {
+            log.error("[Error:Json-Invalid] strJson = " + strJson);
+            return ChFromRabbitMQApp.AppTypeError.INVALID_JSON;
+        }
+
+        try (chConn) {
+
+            String sql = ChUtils.insertBatch(result.size());
+            PreparedStatement statement = chConn.prepareStatement(sql);
+
+            int sqlParamIndex = 0;
+            long id = System.nanoTime();
+            for (Map.Entry<String, JsonUtils.IndexedValue> elem : result.entrySet()) {
+                JsonUtils.IndexedValue value = elem.getValue();
+
+                if (log.isTraceEnabled()) {
+                    log.trace("[SQL:INSERT] id = {}, key = {}, value = {}, index = {}", id, value.getPrefix(), value, value.getIndex());
+                }
+                statement.setLong(++sqlParamIndex, id);
+                statement.setString(++sqlParamIndex, value.getPrefix());
+                statement.setString(++sqlParamIndex, value.getValueAsText());
+                statement.setInt(++sqlParamIndex, value.getIndex() == null ? -1 : value.getIndex());
+
+            }
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("[SQL:Error]", e);
+            return ChFromRabbitMQApp.AppTypeError.ERROR_SQL;
+        }
+        return ChFromRabbitMQApp.AppTypeError.OK;
+
     }
 
 }

@@ -1,13 +1,9 @@
 package ru.kac;
 
-import cc.blynk.clickhouse.ClickHouseConnection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import java.nio.charset.StandardCharsets;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NoArgsConstructor;
@@ -99,46 +95,8 @@ public class ChFromRabbitMQApp {
 
     @SneakyThrows
     private AppTypeError addMqToCh(String strJson) {
-        if (strJson == null) {
-            return AppTypeError.INVALID_JSON;
-        }
-
-        Map<String, JsonUtils.IndexedValue> result;
-        try {
-            result = JsonUtils.jsonToMap(strJson);
-        } catch (Exception e) {
-            log.error("[Error:Json-Invalid] strJson = " + strJson);
-            return AppTypeError.INVALID_JSON;
-        }
-
-        try (ClickHouseConnection chConn = chDataSource.getConnection()) {
-
-            String sql = ChUtils.insertBatch(result.size());
-            PreparedStatement statement = chConn.prepareStatement(sql);
-
-            int sqlParamIndex = 0;
-            long id = System.nanoTime();
-            for (Map.Entry<String, JsonUtils.IndexedValue> elem : result.entrySet()) {
-                JsonUtils.IndexedValue value = elem.getValue();
-
-                if (log.isTraceEnabled()) {
-                    log.trace("[SQL:INSERT] id = {}, key = {}, value = {}, index = {}", id, value.getPrefix(), value, value.getIndex());
-                }
-                statement.setLong(++sqlParamIndex, id);
-                statement.setString(++sqlParamIndex, value.getPrefix());
-                statement.setString(++sqlParamIndex, value.getValueAsText());
-                if (value.getIndex() == null) {
-                    statement.setNull(++sqlParamIndex, Types.INTEGER);
-                } else
-                    statement.setInt(++sqlParamIndex, value.getIndex());
-
-            }
-            statement.execute();
-        } catch (SQLException e) {
-            log.error("[SQL:Error]", e);
-            return AppTypeError.ERROR_SQL;
-        }
-        return AppTypeError.OK;
-
+        return ChUtils.addMqToCh(chDataSource.getConnection(), strJson);
     }
+
+
 }
