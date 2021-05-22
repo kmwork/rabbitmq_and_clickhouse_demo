@@ -1,0 +1,74 @@
+variables:
+    gradleImage: netris-gitlab.qligent.ru:5001/netris/images/gradle:6-6-1-q0
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.jvmargs=-Xmx4g"
+    DOCKER_DRIVER: overlay
+
+stages:
+    - build
+    - test
+    - package
+    - trigger
+
+build:
+    tags:
+        - noservices
+        - itx2
+    image: ${gradleImage}
+    stage: build
+    script:
+        - export GRADLE_USER_HOME=~/.gradle
+        - mkdir -p ~/.gradle
+        - cp init.gradle ~/.gradle/init.gradle
+        - gradle clean build -x test -info --no-build-cache
+    artifacts:
+        paths:
+            - itx2-lm/build/libs/*.jar
+        expire_in: 2 day
+
+test:
+    tags:
+        - gradle
+        - itx2
+    stage: test
+    script:
+        - gradle test
+    artifacts:
+        when: on_failure
+        paths:
+            - itx2-lm/build/reports/tests/test
+
+.rpm-package:
+    image: ${gradleImage}
+    stage: package
+    needs:
+        - build
+    tags:
+        - noservices
+        - itx2
+    script:
+        - export GRADLE_USER_HOME=~/.gradle
+        - mkdir -p ~/.gradle
+        - cp init.gradle ~/.gradle/init.gradle
+        - gradle buildRpm -info
+        - gradle publish -info
+
+rpm-package-branch:
+    extends: .rpm-package
+    variables:
+        ITX2_NEXUS_RPMS: http://netris-nexus.qligent.ru:8081/repository/itx2yumsnapshots/
+        ITX2_NEXUS_USERNAME: itx2
+
+Trigger distribution:
+    tags:
+        - noservices
+        - itx2
+    needs:
+        - rpm-package-branch
+        - test
+    stage: trigger
+    image: ${gradleImage}
+    script:
+        - gradle versionFile
+        - ciscripts/trigger.sh itx2-dev-2
+    only:
+        - develop
