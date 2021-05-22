@@ -27,7 +27,7 @@ public class ChInsertFromFileApp {
 
 
         Properties prop = new Properties();
-        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
+        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("kostya-profile/kostya-ch.properties"));
 
         final ChDataSource chDataSource = new ChDataSource();
 

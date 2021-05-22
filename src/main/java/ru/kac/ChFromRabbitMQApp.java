@@ -115,7 +115,7 @@ public class ChFromRabbitMQApp {
         }
 
         Properties prop = new Properties();
-        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("ch.properties"));
+        prop.load(ClassLoader.getSystemClassLoader().getResourceAsStream("kostya-profile/kostya-ch.properties"));
 
 
         try (ClickHouseConnection chConn = chDataSource.getConnection()) {
