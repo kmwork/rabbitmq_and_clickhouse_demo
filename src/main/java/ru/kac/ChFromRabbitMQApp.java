@@ -131,7 +131,9 @@ public class ChFromRabbitMQApp {
                 String key = elem.getKey();
                 String value = elem.getValue() == null ? null : elem.getValue().toString();
 
-                log.debug("[SQL:INSERT] id = {}, key = {}, value = {}", id, key, value);
+                if (log.isTraceEnabled()) {
+                    log.trace("[SQL:INSERT] id = {}, key = {}, value = {}", id, key, value);
+                }
                 statement.setLong(++sqlParamIndex, id);
                 statement.setString(++sqlParamIndex, key);
                 statement.setString(++sqlParamIndex, value);
