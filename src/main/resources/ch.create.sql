@@ -19,7 +19,7 @@ create table itx2_events_demo_kostya.itx2_events_with_array
 
 
 select *
-from itx2_events_demo_kostya.itx2_events_demo
+from itx2_events_demo_kostya.itx2_events_with_array
 order by id desc, key asc
 limit 500;
 

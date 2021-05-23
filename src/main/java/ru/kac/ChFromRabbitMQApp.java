@@ -21,7 +21,7 @@ public class ChFromRabbitMQApp {
     private static final long SLEEP_MS = 100;
 
     private final ChDataSource chDataSource = new ChDataSource();
-    private static final int NUM_LOOP = 1000;
+    private static final long NUM_LOOP = Long.MAX_VALUE; //1000;
 
     enum AppTypeError {
         OK,
