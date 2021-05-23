@@ -77,7 +77,7 @@ public class ChUtils {
 
         try (chConn) {
 
-            String sql = ChUtils.insertBatch(result.size());
+            String sql = insertBatch(result.size());
             PreparedStatement statement = chConn.prepareStatement(sql);
 
             int sqlParamIndex = 0;
