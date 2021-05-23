@@ -70,7 +70,7 @@ public class JsonUtils {
         JsonNodeWrapper root = new JsonNodeWrapper(null, node, "");
         queue.offer(root);
 
-        while (queue.size() != 0) {
+        while (!queue.isEmpty()) {
             JsonNodeWrapper curElement = queue.poll();
             if (curElement.node.isObject()) {
                 //Add all fields (JsonNodes) to the queue
