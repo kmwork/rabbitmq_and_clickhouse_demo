@@ -38,7 +38,7 @@ public class ChFromRabbitMQApp {
         public void run() {
             log.info("[FINISH-APP] successCount = {}, totalCount = {}", successCount, totalCount);
             if (errorCountJson.get() > 0 || errorCountSql.get() > 0) {
-                log.error("[App:Errors] errorCountSql = {}, errorCountJson = {}" + errorCountSql, errorCountJson);
+                log.error("[App:Errors] errorCountSql = {}, errorCountJson = {}", errorCountSql, errorCountJson);
             } else log.info("[FINISH-APP] Нет ошибок");
         }
     }
