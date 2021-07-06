@@ -1,6 +1,6 @@
-create database itx2_events_demo_kostya;
+create database kmwork_events_demo_kostya;
 
-create table itx2_events_demo_kostya.itx2_events_demo
+create table kmwork_events_demo_kostya.kmwork_events_demo
 (
     id    UInt64,
     key   VARCHAR(255),
@@ -8,7 +8,7 @@ create table itx2_events_demo_kostya.itx2_events_demo
 ) engine = MergeTree ORDER BY (id, key) PRIMARY KEY (id, key)
       SETTINGS index_granularity = 8192;
 
-create table itx2_events_demo_kostya.itx2_events_with_array
+create table kmwork_events_demo_kostya.kmwork_events_with_array
 (
     id          UInt64,
     key         VARCHAR(255),
@@ -19,7 +19,7 @@ create table itx2_events_demo_kostya.itx2_events_with_array
 
 
 select *
-from itx2_events_demo_kostya.itx2_events_with_array
+from kmwork_events_demo_kostya.kmwork_events_with_array
 order by id desc, key asc
 limit 500;
 

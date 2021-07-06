@@ -1,4 +1,4 @@
-package ru.kac;
+package ru.kmwork;
 
 import cc.blynk.clickhouse.settings.ClickHouseProperties;
 import java.sql.Connection;

@@ -1,4 +1,4 @@
-package ru.kac;
+package ru.kmwork;
 
 import java.util.Map;
 import lombok.NoArgsConstructor;

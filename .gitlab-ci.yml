@@ -12,7 +12,7 @@ stages:
 build:
     tags:
         - noservices
-        - itx2
+        - kmwork
     image: ${gradleImage}
     stage: build
     script:
@@ -22,20 +22,20 @@ build:
         - gradle clean build -x test -info --no-build-cache
     artifacts:
         paths:
-            - itx2-lm/build/libs/*.jar
+            - kmwork-lm/build/libs/*.jar
         expire_in: 2 day
 
 test:
     tags:
         - gradle
-        - itx2
+        - kmwork
     stage: test
     script:
         - gradle test
     artifacts:
         when: on_failure
         paths:
-            - itx2-lm/build/reports/tests/test
+            - kmwork-lm/build/reports/tests/test
 
 .rpm-package:
     image: ${gradleImage}
@@ -44,7 +44,7 @@ test:
         - build
     tags:
         - noservices
-        - itx2
+        - kmwork
     script:
         - export GRADLE_USER_HOME=~/.gradle
         - mkdir -p ~/.gradle
@@ -55,13 +55,13 @@ test:
 rpm-package-branch:
     extends: .rpm-package
     variables:
-        ITX2_NEXUS_RPMS: http://netris-nexus.qligent.ru:8081/repository/itx2yumsnapshots/
-        ITX2_NEXUS_USERNAME: itx2
+        kmwork_NEXUS_RPMS: http://netris-nexus.qligent.ru:8081/repository/kmworkyumsnapshots/
+        kmwork_NEXUS_USERNAME: kmwork
 
 Trigger distribution:
     tags:
         - noservices
-        - itx2
+        - kmwork
     needs:
         - rpm-package-branch
         - test
@@ -69,6 +69,6 @@ Trigger distribution:
     image: ${gradleImage}
     script:
         - gradle versionFile
-        - ciscripts/trigger.sh itx2-dev-2
+        - ciscripts/trigger.sh kmwork-dev-2
     only:
         - develop

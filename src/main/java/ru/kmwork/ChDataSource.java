@@ -1,4 +1,4 @@
-package ru.kac;
+package ru.kmwork;
 
 import cc.blynk.clickhouse.ClickHouseConnection;
 import cc.blynk.clickhouse.ClickHouseDataSource;

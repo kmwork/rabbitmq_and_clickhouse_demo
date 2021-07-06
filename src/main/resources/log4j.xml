@@ -7,7 +7,7 @@
         </layout>
     </appender>
 
-    <category name="ru.kac">
+    <category name="ru.kmwork">
         <priority value="debug"></priority>
     </category>
 

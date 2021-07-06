@@ -1,4 +1,4 @@
-package ru.kac;
+package ru.kmwork;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;

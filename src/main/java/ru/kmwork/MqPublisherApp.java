@@ -1,4 +1,4 @@
-package ru.kac;
+package ru.kmwork;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConfirmCallback;
